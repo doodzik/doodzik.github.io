@@ -39,11 +39,11 @@ but for complex patterns it is a mess. So I wanted something resembling Haskell.
 
 
 ## Where
-### Where we were
+### Where I was
 ```ruby
   def example1(bar1, bar2)
-    return 'foo1' if value1 == 'hallo'
-    if value1 == 'world' && value2 == 'hallo')
+    return 'foo1' if bar1 == 'hallo'
+    if bar1 == 'world' && bar2 == 'hallo')
       return 'foo2'
     end
     ‘foo’
