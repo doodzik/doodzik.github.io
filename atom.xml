@@ -4,13 +4,331 @@
   <title><![CDATA[digress]]></title>
   <link href="http://dudzik.co/atom.xml" rel="self"/>
   <link href="http://dudzik.co/"/>
-  <updated>2014-09-17T00:10:39+02:00</updated>
+  <updated>2014-10-27T22:47:41+01:00</updated>
   <id>http://dudzik.co/</id>
   <author>
-    <name><![CDATA[Dudzik]]></name>
+    <name><![CDATA[Frederik Dudzik]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[I Went on a Journey to Haskell and All I Got Was a Pattern Matcher for Ruby]]></title>
+    <link href="http://dudzik.co/blog/2014/10/27/i-went-on-a-journey-to-haskell-and-all-i-got-was-a-pattern-matcher-for-ruby/"/>
+    <updated>2014-10-27T21:46:55+01:00</updated>
+    <id>http://dudzik.co/blog/2014/10/27/i-went-on-a-journey-to-haskell-and-all-i-got-was-a-pattern-matcher-for-ruby</id>
+    <content type="html"><![CDATA[<h2>tl;dr</h2>
+
+<p>Defp is a pattern matcher implementation written for &amp; in ruby.
+It is build on top of CallBaecker, which adds callbacks to methods.
+A before hook assigns the arguments of the called method to an instance variable.
+Defp tests the provided pattern against this instance variable.
+If the pattern matches, defp will throw a specific signal to CallBaecker.
+This signal causes CallBaecker to terminate the method and return the provided value from the throw.</p>
+
+<h2>What we’ll learn from this</h2>
+
+<p>This article exposes the inner workings of Defp and its dependency CallBaecker.
+You can expect a lot of metaprogramming.</p>
+
+<h2>Why</h2>
+
+<p>I&rsquo;ve spend a rather long time with Haskell over the past couple of weeks.
+After I returned to Ruby I&rsquo;ve noticed the absence of a few techniques.
+One of them is pattern matching. In ruby it is possible to match against a pattern,
+but for complex patterns it is a mess. So I wanted something resembling Haskell.</p>
+
+<h2>Where</h2>
+
+<h3>Where I was</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">example1</span><span class="p">(</span><span class="n">bar1</span><span class="p">,</span> <span class="n">bar2</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s1">&#39;foo1&#39;</span> <span class="k">if</span> <span class="n">bar1</span> <span class="o">==</span> <span class="s1">&#39;hallo&#39;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">bar1</span> <span class="o">==</span> <span class="s1">&#39;world&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">bar2</span> <span class="o">==</span> <span class="s1">&#39;hallo&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s1">&#39;foo2&#39;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="err">‘</span><span class="n">foo</span><span class="err">’</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Where I wanted to be</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span>  <span class="nf">example</span><span class="p">(</span><span class="n">bar1</span>  <span class="p">,</span> <span class="n">bar2</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">defp</span> <span class="n">example</span><span class="p">(</span><span class="s1">&#39;hallo&#39;</span> <span class="p">,</span> <span class="n">_</span>     <span class="p">)</span> <span class="o">=</span> <span class="s1">&#39;foo1&#39;</span>
+</span><span class='line'>  <span class="n">defp</span> <span class="n">example</span><span class="p">(</span><span class="s1">&#39;world&#39;</span><span class="p">,</span> <span class="s1">&#39;hallo&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="s1">&#39;foo2&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>    <span class="s1">&#39;foo3&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Where I ended up</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span>  <span class="nf">example</span><span class="p">(</span><span class="n">bar1</span> <span class="p">,</span>  <span class="n">bar2</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">defp</span>        <span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span>  <span class="n">_</span>     <span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;foo1&#39;</span>
+</span><span class='line'>  <span class="n">defp</span>        <span class="p">(</span><span class="s1">&#39;world&#39;</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-&gt;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="s1">&#39;foo2&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>    <span class="s1">&#39;foo3&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>How</h2>
+
+<p>First I altered the code a bit:
+* Indent the code normally.
+* The underscore is a method that returns false. I will remove this syntactic sugar.
+* ‘==’ is an instance method on the return value of defp. I will change it to call.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span>  <span class="nf">example</span><span class="p">(</span><span class="n">bar1</span> <span class="p">,</span>  <span class="n">bar2</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">defp</span><span class="p">(</span><span class="s1">&#39;hallo&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;foo1&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="s1">&#39;foo2&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>By now the code has become much clearer.
+How does defp access the arguments of the ‘example’ method?
+CallBaecker modifies the ‘example’ method to store its arguments in an instance variable.
+CallBaecker relies on method_added(name). This method is invoked for each method which is added to the receiver.
+When method_added is called it will define a new method.
+This method saves its arguments into the instance variable __last_args.
+Afterward comes a catch and inside its block the original method is invoked.
+Now throw can be used in defp to terminate the ’example’ method without a return statement. This is due to the fact tha catch doesn&rsquo;t care about its static scope.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">method_added</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>      <span class="n">without</span> <span class="o">=</span> <span class="ss">:&quot;</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="ss">_without_before_each_method&quot;</span>
+</span><span class='line'>      <span class="n">with</span> <span class="o">=</span> <span class="ss">:&quot;</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="ss">_with_before_each_method&quot;</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>      <span class="n">define_method</span> <span class="n">with</span> <span class="k">do</span> <span class="o">|*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="o">|</span>
+</span><span class='line'>        <span class="vi">@__last_args</span> <span class="o">=</span> <span class="o">*</span><span class="n">args</span>
+</span><span class='line'>        <span class="kp">catch</span> <span class="ss">:CallBaeckerDone</span> <span class="k">do</span>
+</span><span class='line'>          <span class="nb">send</span> <span class="n">without</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>   <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we need to make sure that when we call our method we execute the one with the callback.
+The ‘example’ method with an callback is now defined as ‘example_with_before_each_method’.
+To be able to invoke ‘example_with_before_each_method’ when ‘example’ is called. I leverage from the alias_method for this.
+First I create an alias for the original method to the &lsquo;without&rsquo; callback name.
+And a second Alias for the &lsquo;with&rsquo; method name with the initial method name.
+Then I make sure that method_added won&rsquo;t be triggert for the callback methods with an guard.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">method_added</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">if</span> <span class="vi">@__last_methods_added</span> <span class="o">&amp;&amp;</span> <span class="vi">@__last_methods_added</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1"># ...</span>
+</span><span class='line'>  <span class="vi">@__last_methods_added</span> <span class="o">=</span> <span class="o">[</span><span class="nb">name</span><span class="p">,</span> <span class="n">with</span><span class="p">,</span> <span class="n">without</span><span class="o">]</span>
+</span><span class='line'>  <span class="c1"># ...</span>
+</span><span class='line'>  <span class="n">alias_method</span> <span class="n">without</span><span class="p">,</span> <span class="nb">name</span>
+</span><span class='line'>  <span class="n">alias_method</span> <span class="nb">name</span><span class="p">,</span> <span class="n">with</span>
+</span><span class='line'>  <span class="vi">@__last_methods_added</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This works only for instance methods, but how does it for class methods?
+Its similar. Three things need to be replaced:
+* method_added with singleton_method_added
+* define_method  with define_singleton_method
+* alias_method(name, with) with singleton_class.send(:alias_method, :sym0, :sym1)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">singleton_method_added</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1"># ...</span>
+</span><span class='line'>  <span class="n">define_singleton_method</span> <span class="n">with</span> <span class="k">do</span> <span class="o">|*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="o">|</span>
+</span><span class='line'>  <span class="c1"># ...</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">singleton_class</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:alias_method</span><span class="p">,</span> <span class="n">without</span><span class="p">,</span> <span class="nb">name</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">singleton_class</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:alias_method</span><span class="p">,</span> <span class="nb">name</span><span class="o">.</span><span class="n">to_sym</span><span class="p">,</span> <span class="n">with</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1"># ...</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let’s take a look on how defp is implemented:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">defp</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">matches_pattern?</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">?</span> <span class="no">Between</span><span class="o">.</span><span class="n">new</span> <span class="p">:</span> <span class="no">NullBetween</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is straight forward. If the pattern matches it instantiate a new Between object otherwise a NullBetween object.
+NullBetween and Between implementation looks as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">class</span> <span class="nc">NullBetween</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">==</span><span class="p">(</span><span class="n">_param</span><span class="p">)</span> <span class="c1"># call(_param)</span>
+</span><span class='line'>      <span class="kp">nil</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Between</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">==</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="c1"># call(param)</span>
+</span><span class='line'>      <span class="n">value</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Proc</span><span class="p">)</span> <span class="p">?</span> <span class="n">param</span><span class="o">.</span><span class="n">call</span> <span class="p">:</span> <span class="n">param</span>
+</span><span class='line'>      <span class="kp">throw</span> <span class="ss">:CallBaeckerDone</span><span class="p">,</span> <span class="n">value</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If &lsquo;==&rsquo; is send to NullBetween nothing will happen. On the other hand <code>Between.new == arg</code> throws CallBaeckerDone with the provided argument.
+This will terminate the method and return the provided value.</p>
+
+<p>How does the matching work?</p>
+
+<p>First the pattern arguments are zipped with the last method argumenst, which will result in this data structure:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="o">[</span>
+</span><span class='line'>    <span class="o">[</span><span class="n">pattern_args</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span> <span class="n">last_args</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">]</span>
+</span><span class='line'>  <span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then the patterns are selected that aren’t false.
+Then the type of the argument is tested.
+If the argument is a hash we reject every value that is false.
+Then pattern_args[i], last_args[i] are tested against each other.
+If all pattern matches it returns true.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">matches_pattern?</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1"># arg[1] == called_by_method_args</span>
+</span><span class='line'>  <span class="c1"># arg[0] == pattern_args</span>
+</span><span class='line'>  <span class="n">args</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="vi">@__last_args</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">arg</span><span class="o">|</span> <span class="n">arg</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">all?</span> <span class="k">do</span> <span class="o">|</span><span class="n">arg</span><span class="o">|</span>
+</span><span class='line'>    <span class="c1"># TODO cleanup</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">arg</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">is_a?</span> <span class="no">Hash</span>
+</span><span class='line'>      <span class="n">pattern_args</span> <span class="o">=</span> <span class="n">arg</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">reject</span> <span class="p">{</span><span class="o">|</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="o">|</span> <span class="o">!</span><span class="n">v</span><span class="p">}</span>
+</span><span class='line'>      <span class="n">pattern_args</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">all?</span> <span class="p">{</span> <span class="o">|</span><span class="n">key</span><span class="o">|</span> <span class="n">arg</span><span class="o">[</span><span class="mi">1</span><span class="o">][</span><span class="n">key</span><span class="o">]</span> <span class="o">==</span> <span class="n">arg</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">key</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">arg</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">==</span> <span class="n">arg</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Defp includes and extends itself to have a class and an instance method of defp and _ available.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">extended</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">send</span> <span class="ss">:include</span><span class="p">,</span> <span class="no">DefpMethods</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">DefpMethods</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Defp module needs to be extended before the CallBaecker module is included.
+So that the defp methods won’t be modified by it.</p>
+
+<h2>Conclusion</h2>
+
+<p>Ruby is a flexible language. So flexible that we can add new behaviour with ease and it is short. I am happy with the result and I hope at least someone learned something new about ruby :)</p>
+
+<p>check out the source for <a href="https://github.com/doodzik/defp">Defp</a> &amp; <a href="https://github.com/doodzik/CallBaecker">CallBaecker</a></p>
+]]></content>
+  </entry>
   
 </feed>
