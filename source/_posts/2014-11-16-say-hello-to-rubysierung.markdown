@@ -21,6 +21,7 @@ class ExampleClass
   def buz(foo: String, bar: Strict::String)
     [foo, bar]
   end
+end
 ```
 ## what it translates to
 ```ruby
@@ -33,6 +34,7 @@ class ExampleClass
     bar = bar.to_str
     [foo, bar]
   end
+end
 ```
 ## what types are supported
 ```ruby
