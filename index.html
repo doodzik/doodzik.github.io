@@ -122,7 +122,7 @@
 
 
   <div class="entry-content" style="font-family: ; font-size: "><p>After reading <a href="http://devblog.avdi.org/">Avdi Grimm&rsquo;s</a> book &ldquo;<a href="http://www.confidentruby.com/">Confident Ruby</a>” and my work on <a href="https://github.com/doodzik/CallBaecker">CallBaecker</a> and <a href="https://github.com/doodzik/defp">defp</a> I had an Idea for an implementation of “static typing” in Ruby.
-My goal was to build a shorthand for ruby’s conversion methods syntactic simililar to other languages.
+My goal was to build a shorthand for ruby’s conversion methods syntactic similar to other languages.
 By relying on ruby’s conversion methods I preserved the initial flexibility of ruby. Furthermore I’ve added extended Error messages to ease debuging code. And you can add custom types.</p>
 
 <p>So I’m happy to publish my take on ”static typing” in ruby.</p>
@@ -136,6 +136,7 @@ By relying on ruby’s conversion methods I preserved the initial flexibility of
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
+<span class='line-number'>8</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ExampleClass</span>
 </span><span class='line'>  <span class="kp">extend</span> <span class="no">Rubysierung</span>
 </span><span class='line'>  <span class="kp">include</span> <span class="no">CallBaecker</span>
@@ -143,6 +144,7 @@ By relying on ruby’s conversion methods I preserved the initial flexibility of
 </span><span class='line'>  <span class="k">def</span> <span class="nf">buz</span><span class="p">(</span><span class="ss">foo</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span> <span class="ss">bar</span><span class="p">:</span> <span class="no">Strict</span><span class="o">::</span><span class="nb">String</span><span class="p">)</span>
 </span><span class='line'>    <span class="o">[</span><span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="o">]</span>
 </span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -157,6 +159,7 @@ By relying on ruby’s conversion methods I preserved the initial flexibility of
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
+<span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ExampleClass</span>
 </span><span class='line'>  <span class="kp">extend</span> <span class="no">Rubysierung</span>
 </span><span class='line'>  <span class="kp">include</span> <span class="no">CallBaecker</span>
@@ -166,6 +169,7 @@ By relying on ruby’s conversion methods I preserved the initial flexibility of
 </span><span class='line'>    <span class="n">bar</span> <span class="o">=</span> <span class="n">bar</span><span class="o">.</span><span class="n">to_str</span>
 </span><span class='line'>    <span class="o">[</span><span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="o">]</span>
 </span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
