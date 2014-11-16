@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Ruby, | digress]]></title>
-  <link href="http://dudzik.co/blog/categories/ruby/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Rubysierung, | digress]]></title>
+  <link href="http://dudzik.co/blog/categories/rubysierung/atom.xml" rel="self"/>
   <link href="http://dudzik.co/"/>
   <updated>2014-11-16T22:11:20+01:00</updated>
   <id>http://dudzik.co/</id>

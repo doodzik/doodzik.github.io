@@ -4,7 +4,7 @@
   <title><![CDATA[digress]]></title>
   <link href="http://dudzik.co/atom.xml" rel="self"/>
   <link href="http://dudzik.co/"/>
-  <updated>2014-11-05T18:30:49+01:00</updated>
+  <updated>2014-11-16T22:11:20+01:00</updated>
   <id>http://dudzik.co/</id>
   <author>
     <name><![CDATA[Frederik Dudzik]]></name>
@@ -12,6 +12,99 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Say Hello to Rubysierung.]]></title>
+    <link href="http://dudzik.co/blog/2014/11/16/say-hello-to-rubysierung/"/>
+    <updated>2014-11-16T21:59:35+01:00</updated>
+    <id>http://dudzik.co/blog/2014/11/16/say-hello-to-rubysierung</id>
+    <content type="html"><![CDATA[<p>After reading <a href="http://devblog.avdi.org/">Avdi Grimm&rsquo;s</a> book &ldquo;<a href="http://www.confidentruby.com/">Confident Ruby</a>” and my work on <a href="https://github.com/doodzik/CallBaecker">CallBaecker</a> and <a href="https://github.com/doodzik/defp">defp</a> I had an Idea for an implementation of “static typing” in Ruby.
+My goal was to build a shorthand for ruby’s conversion methods syntactic simililar to other languages.
+By relying on ruby’s conversion methods I preserved the initial flexibility of ruby. Furthermore I’ve added extended Error messages to ease debuging code. And you can add custom types.</p>
+
+<p>So I’m happy to publish my take on ”static typing” in ruby.</p>
+
+<h2>what it looks like</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ExampleClass</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">Rubysierung</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">CallBaecker</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">buz</span><span class="p">(</span><span class="ss">foo</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span> <span class="ss">bar</span><span class="p">:</span> <span class="no">Strict</span><span class="o">::</span><span class="nb">String</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">[</span><span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>what it translates to</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ExampleClass</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">Rubysierung</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">CallBaecker</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">buz</span><span class="p">(</span><span class="ss">foo</span><span class="p">:</span> <span class="p">,</span> <span class="ss">bar</span><span class="p">:</span> <span class="p">)</span>
+</span><span class='line'>    <span class="n">foo</span> <span class="o">=</span> <span class="n">foo</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>    <span class="n">bar</span> <span class="o">=</span> <span class="n">bar</span><span class="o">.</span><span class="n">to_str</span>
+</span><span class='line'>    <span class="o">[</span><span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>what types are supported</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="o">[</span>
+</span><span class='line'>  <span class="c1"># Type ,     explicid, implicid</span>
+</span><span class='line'>    <span class="o">[</span><span class="nb">String</span><span class="p">,</span>   <span class="ss">:to_s</span><span class="p">,</span>    <span class="ss">:to_str</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="nb">Integer</span><span class="p">,</span>  <span class="ss">:to_i</span><span class="p">,</span>    <span class="ss">:to_int</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="nb">Array</span><span class="p">,</span>    <span class="ss">:to_a</span><span class="p">,</span>    <span class="ss">:to_ary</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="no">Complex</span><span class="p">,</span>  <span class="ss">:to_c</span><span class="p">,</span>    <span class="ss">:to_c</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="nb">Float</span><span class="p">,</span>    <span class="ss">:to_f</span><span class="p">,</span>    <span class="ss">:to_f</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="no">Hash</span><span class="p">,</span>     <span class="ss">:to_h</span><span class="p">,</span>    <span class="ss">:to_hash</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="no">Rational</span><span class="p">,</span> <span class="ss">:to_r</span><span class="p">,</span>    <span class="ss">:to_r</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="no">IO</span><span class="p">,</span>       <span class="ss">:to_io</span><span class="p">,</span>   <span class="ss">:to_io</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="no">Proc</span><span class="p">,</span>     <span class="ss">:to_proc</span><span class="p">,</span> <span class="ss">:to_proc</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="no">Symbol</span><span class="p">,</span>   <span class="ss">:to_sym</span><span class="p">,</span>  <span class="ss">:to_sym</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="o">[</span><span class="no">Thread</span><span class="p">,</span>   <span class="ss">:join</span><span class="p">,</span>    <span class="ss">:join</span><span class="o">]</span>
+</span><span class='line'>  <span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the future I want to add the possibility to use default values with a specified type.
+If you have any additional types, ideas or enhancements, feel free to open a pull request, issue or leave a comment :)</p>
+
+<p>Head over to the <a href="https://github.com/doodzik/rubysierung">repository</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[I Went on a Journey to Haskell and All I Got Was a Pattern Matcher for Ruby]]></title>
