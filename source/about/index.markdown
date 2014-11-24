@@ -10,4 +10,4 @@ My expert area is full stack development.
 In my spare time I like to code on personal and open source projects.
 I love learning by mistakes, challenges and I’m always looking for opportunities to do awesome things.
 
-Contact: [Github](https://github.com/doodzik)
+Contact: [Github](https://github.com/doodzik), [Twitter](https://twitter.com/doodzik)
