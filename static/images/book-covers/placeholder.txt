@@ -1,0 +1,14 @@
+# Book Cover Storage
+
+This directory contains locally stored book covers for resilience against third-party site removal.
+
+To download all book covers, run:
+```bash
+npm run download-covers
+```
+
+Each book cover should be saved as a .jpg file with a descriptive filename.
+Book data in index.tsx should reference these local paths like:
+`/images/book-covers/mindset.jpg`
+
+This ensures the site remains functional even if external image sources become unavailable.

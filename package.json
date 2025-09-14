@@ -1,0 +1,37 @@
+{
+  "name": "website",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "develop": "gatsby develop",
+    "start": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean",
+    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
+    "download-covers": "node scripts/download-book-covers.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@mdx-js/react": "^2.3.0",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "gatsby": "^5.15.0",
+    "gatsby-plugin-manifest": "^5.15.0",
+    "gatsby-plugin-mdx": "^5.15.0",
+    "gatsby-plugin-typescript": "^5.15.0",
+    "gatsby-remark-prismjs": "^7.15.0",
+    "gatsby-source-filesystem": "^5.15.0",
+    "prismjs": "^1.30.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}

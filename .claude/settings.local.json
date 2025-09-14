@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.facumontanaro.com)",
+      "WebFetch(domain:dudzik.co)",
+      "WebFetch(domain:www.jordanbpeterson.com)",
+      "WebFetch(domain:www.agoodbook.de)",
+      "Bash(npx gatsby new:*)",
+      "Bash(npm create:*)",
+      "Bash(pkill:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm start)",
+      "WebFetch(domain:weekendlabs.net)",
+      "Bash(curl:*)",
+      "Bash(npm run download-covers:*)",
+      "Bash(node:*)",
+      "Bash(find:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run serve:*)",
+      "Bash(lsof:*)",
+      "Bash(gatsby serve:*)",
+      "Bash(npx gatsby serve:*)",
+      "Bash(kill:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
