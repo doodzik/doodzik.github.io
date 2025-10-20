@@ -209,5 +209,7 @@ export const Head: HeadFC = () => (
     <title>I went on a journey to Haskell and all I got was a pattern matcher for ruby - Frederik Dudzik</title>
     <meta name="description" content="Creating a Haskell-inspired pattern matching implementation for Ruby using metaprogramming techniques." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

@@ -171,7 +171,9 @@ export default PlatformValuesPage
 export const Head: HeadFC = () => (
   <>
     <title>Platform Values - Frederik Dudzik</title>
-    <meta name="description" content="Understanding platform values for consistent decision-making in software development" />
+    <meta name="description" content="Decision making requires trade-offs. Understanding platform values helps make consistent decisions and build coherent systems." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

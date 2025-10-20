@@ -39,5 +39,7 @@ export const Head: HeadFC = () => (
     <title>Why Passwords don't make sense - Frederik Dudzik</title>
     <meta name="description" content="A critique of password-based authentication and the case for email-only authentication systems." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

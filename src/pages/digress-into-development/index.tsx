@@ -126,5 +126,7 @@ export const Head: HeadFC = () => (
     <title>Development Blog Archive - Frederik Dudzik</title>
     <meta name="description" content="Historical technical writing about engineering practices and lessons learned (2014-2018)" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

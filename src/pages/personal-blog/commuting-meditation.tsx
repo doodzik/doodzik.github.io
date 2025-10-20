@@ -30,7 +30,9 @@ export default CommutingMeditationPage
 export const Head: HeadFC = () => (
   <>
     <title>Commuting Meditation - Frederik Dudzik</title>
-    <meta name="description" content="A practical approach to mindfulness through commuting meditation - focusing on surroundings and details during daily travel." />
+    <meta name="description" content="Transform routine travel into mindfulness training through simple awareness practices during transit." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

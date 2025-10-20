@@ -82,5 +82,7 @@ export const Head: HeadFC = () => (
     <title>Say hello to Rubysierung - Frederik Dudzik</title>
     <meta name="description" content="A soft typing implementation for Ruby inspired by Confident Ruby, providing shorthand for Ruby's conversion methods." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

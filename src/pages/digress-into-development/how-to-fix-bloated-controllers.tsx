@@ -39,5 +39,7 @@ export const Head: HeadFC = () => (
     <title>How to fix bloated Controllers - Frederik Dudzik</title>
     <meta name="description" content="A guide to refactoring bloated MVC controllers through better organization and CRUD principles." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

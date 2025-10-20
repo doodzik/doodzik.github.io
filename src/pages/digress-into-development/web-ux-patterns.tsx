@@ -62,5 +62,7 @@ export const Head: HeadFC = () => (
     <title>Web UX Patterns - Frederik Dudzik</title>
     <meta name="description" content="Essential web user experience patterns for creating intuitive and accessible websites." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

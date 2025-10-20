@@ -538,5 +538,7 @@ export const Head: HeadFC = () => (
     <title>Bookshelf - Frederik Dudzik</title>
     <meta name="description" content="Books that have meaningfully shaped how I think about work, systems, and life." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

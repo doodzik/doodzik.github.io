@@ -130,7 +130,9 @@ export default DoStructuredBugReportsReduceBugProcessingCostsPage
 export const Head: HeadFC = () => (
   <>
     <title>Do Structured Bug Reports Reduce Bug Processing Costs? - Frederik Dudzik</title>
-    <meta name="description" content="An empirical study examining whether GitHub Issue Templates reduce bug management effort for developers." />
+    <meta name="description" content="Research examining how GitHub Issue Templates affect bug report processing efficiency and developer workflow." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )

@@ -48,5 +48,7 @@ export const Head: HeadFC = () => (
     <title>Content First Design - Frederik Dudzik</title>
     <meta name="description" content="A methodical approach to web development prioritizing content, accessibility, and user experience over visual design." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </>
 )
