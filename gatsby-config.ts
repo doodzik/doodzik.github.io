@@ -9,6 +9,13 @@ const config: GatsbyConfig = {
   },
   plugins: [
     `gatsby-plugin-typescript`,
+    {
+      resolve: `gatsby-plugin-sitemap`,
+      options: {
+        output: '/',
+        createLinkInHead: true,
+      },
+    },
   ],
 }
 
